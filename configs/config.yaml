@@ -1,0 +1,25 @@
+Server:
+  RunMode: "debug"           # 新增
+  HttpPort: "4001"           # 注意是字符串类型
+  ReadTimeout: 60
+  WriteTimeout: 60
+
+Database:
+  DBType: "mysql"            # 新增
+  UserName: "go_user"        # 注意是 UserName 不是 Username
+  Password: "123456"
+  Host: "192.168.40.132:3306"     # 注意格式
+  DBName: "chatroom"
+  TablePrefix: ""            # 新增
+  Charset: "utf8mb4"         # 新增
+  ParseTime: "True"          # 新增，字符串类型
+  MaxIdleConns: 10           # 新增
+  MaxOpenConns: 100          # 新增
+
+JWT:
+  Secret: "mTl1Tkdrl+ZrSfFm+k2A3B/QEx+copO+9kWwRJ+Ikuk="
+  Issuer: "Chatroom"         # 新增
+  Expire: 24                 # 单位小时
+
+Chatroom:
+  MessageQueueLength: 100    # 新增
