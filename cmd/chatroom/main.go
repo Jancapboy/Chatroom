@@ -5,11 +5,11 @@ import (
 	"net/http"
 	"time"
 
-	"github.com/Huang-Yujie/Chatroom/global"
-	"github.com/Huang-Yujie/Chatroom/internal/chat"
-	"github.com/Huang-Yujie/Chatroom/internal/model"
-	"github.com/Huang-Yujie/Chatroom/internal/routers"
-	"github.com/Huang-Yujie/Chatroom/internal/setting"
+	"github.com/Jancapboy/Chatroom/global"
+	"github.com/Jancapboy/Chatroom/internal/chat"
+	"github.com/Jancapboy/Chatroom/internal/model"
+	"github.com/Jancapboy/Chatroom/internal/routers"
+	"github.com/Jancapboy/Chatroom/internal/setting"
 	"github.com/gin-gonic/gin"
 	"gorm.io/gorm"
 )
@@ -51,6 +51,8 @@ func setupSettings() error {
 	if err != nil {
 		return err
 	}
+
+	// 读取各个配置节
 	err = settings.ReadSection("Server", &global.ServerSettings)
 	if err != nil {
 		return err
@@ -68,12 +70,26 @@ func setupSettings() error {
 		return err
 	}
 
+	// 新增：读取 AI 配置
+	aiConfig, err := settings.GetAIConfig()
+	if err != nil {
+		log.Printf("警告：读取AI配置失败，将使用默认值: %v", err)
+		// 设置默认 AI 配置
+		global.AISettings = &setting.AISettingS{
+			Model:   "deepseek-chat",
+			BaseURL: "https://api.deepseek.com",
+		}
+	} else {
+		global.AISettings = aiConfig
+		log.Printf("AI配置加载成功: model=%s", global.AISettings.Model)
+	}
+
+	// 转换时间单位
 	global.ServerSettings.ReadTimeout *= time.Second
 	global.ServerSettings.WriteTimeout *= time.Second
 	global.JWTSettings.Expire *= time.Second
 	return nil
 }
-
 func setupDBEngine() error {
 	var err error
 	global.DBEngine, err = model.NewDBEngine(global.DatabaseSettings)

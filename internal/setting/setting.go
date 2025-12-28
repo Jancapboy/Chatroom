@@ -3,20 +3,21 @@ package setting
 
 import (
 	"fmt"
+	//"time"
 
 	"github.com/spf13/viper"
 )
 
-// AI配置结构体
-type AIConfig struct {
+// 1. 添加 AI 配置结构体
+type AISettingS struct {
 	APIKey  string `mapstructure:"api_key"`
 	Model   string `mapstructure:"model"`
 	BaseURL string `mapstructure:"base_url"`
 }
 
+// 2. 修改 Setting 结构体（如果还没有的话）
 type Setting struct {
 	vp *viper.Viper
-	AI AIConfig
 }
 
 func NewSetting() (*Setting, error) {
@@ -29,30 +30,25 @@ func NewSetting() (*Setting, error) {
 		return nil, fmt.Errorf("读取配置文件失败: %w", err)
 	}
 
-	s := &Setting{vp: vp}
+	return &Setting{vp}, nil
+}
 
-	// 读取AI配置
-	if err := vp.UnmarshalKey("AI", &s.AI); err != nil {
-		return nil, fmt.Errorf("解析AI配置失败: %w", err)
-	}
+// 3. 添加读取 AI 配置的方法
 
-	// 验证配置
-	if s.AI.APIKey == "" {
-		return nil, fmt.Errorf("AI API密钥未配置")
+// 4. 添加 GetAIConfig 方法
+func (s *Setting) GetAIConfig() (*AISettingS, error) {
+	aiConfig := &AISettingS{}
+	if err := s.ReadSection("AI", aiConfig); err != nil {
+		return nil, err
 	}
 
 	// 设置默认值
-	if s.AI.Model == "" {
-		s.AI.Model = "deepseek-chat"
+	if aiConfig.Model == "" {
+		aiConfig.Model = "deepseek-chat"
 	}
-	if s.AI.BaseURL == "" {
-		s.AI.BaseURL = "https://api.deepseek.com"
+	if aiConfig.BaseURL == "" {
+		aiConfig.BaseURL = "https://api.deepseek.com"
 	}
 
-	return s, nil
-}
-
-// 获取AI配置的方法
-func (s *Setting) GetAIConfig() AIConfig {
-	return s.AI
+	return aiConfig, nil
 }

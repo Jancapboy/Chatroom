@@ -1,3 +1,4 @@
+// global/setting.go
 package global
 
 import (
@@ -9,4 +10,5 @@ var (
 	DatabaseSettings *setting.DatabaseSetting
 	JWTSettings      *setting.JWTSetting
 	ChatroomSettings *setting.ChatroomSetting
+	AISettings       *setting.AISettingS // 新增 AI 配置
 )

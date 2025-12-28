@@ -14,11 +14,16 @@ func NewRouter() *gin.Engine {
 	if global.ServerSettings.RunMode == "debug" {
 		r.Use(gin.Logger(), gin.Recovery())
 	}
+	r.Use(middleware.Cors())
+
 	user := api.NewUser()
+	ai := api.NewAI()
+
 	apiGroup := r.Group("/api")
 	{
 		apiGroup.POST("/register", user.Register)
 		apiGroup.POST("/login", user.Login)
+		apiGroup.POST("/ai/chat", ai.Chat) // 添加AI聊天路由
 	}
 	wsGroup := r.Group("/ws")
 	wsGroup.Use(middleware.JWT())

@@ -23,3 +23,8 @@ JWT:
 
 Chatroom:
   MessageQueueLength: 100    # 新增
+
+AI:
+  api_key: "sk-b0f7906b450e43c99d4fc5e95af68e62"  # 替换为真实密钥
+  model: "deepseek-chat"          # 可选，默认就是这个
+  base_url: "https://api.deepseek.com"  # 可选，默认就是这个
