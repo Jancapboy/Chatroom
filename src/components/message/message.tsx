@@ -1,4 +1,4 @@
-import { ExclamationCircleOutlined, SyncOutlined } from "@ant-design/icons";
+import { ExclamationCircleOutlined, SyncOutlined, RobotOutlined } from "@ant-design/icons"; // 新增RobotOutlined
 import { Popover } from "antd";
 import "./message.scss";
 
@@ -7,19 +7,30 @@ interface IMessageParams {
   nickname: string;
   nowTime: Date;
   sentTime: number;
-  status: "receive" | "sending" | "sent" | "fail";
+  status: "receive" | "sending" | "sent" | "fail" | "ai"; // 新增"ai"状态
 }
 
 export default function Message(params: IMessageParams) {
   const hsl = hashCode(params.nickname);
   const bgcolor = `hsl(${hsl[0]},${hsl[1]}%,${hsl[2]}%)`;
+  
+  // AI消息使用固定颜色
+  const aiBgColor = params.status === "ai" ? "#1976d2" : bgcolor;
+  
   return (
     <div className={`message ${params.status}`}>
-      <div className="avatar" style={{ background: bgcolor }}>
-        <div className="avatarChar">{avatarChar(params.nickname)}</div>
+      <div className="avatar" style={{ background: aiBgColor }}>
+        <div className="avatarChar">
+          {params.status === "ai" ? "AI" : avatarChar(params.nickname)}
+        </div>
       </div>
       <div className="messageBox">
-        <div className="nickname">{params.nickname}</div>
+        <div className="nickname">
+          {params.nickname}
+          {params.status === "ai" && (
+            <RobotOutlined style={{ marginLeft: 8, fontSize: 12, color: "#1976d2" }} />
+          )}
+        </div>
         <div className="text">{params.content}</div>
         <div className="time">
           {timeString(new Date(params.sentTime), params.nowTime)}

@@ -1,16 +1,52 @@
 .chat  {
-    position:relative;
-    display:flex;
-    flex-direction:row;
-    height:100vh;
+    position: relative;
+    display: flex;
+    flex-direction: column; /* 改为column布局 */
+    height: 100vh;
     background-image: linear-gradient(120deg, #fdfbfb 0%, #ebedee 100%);
+    
+    /* 新增：模式选择器样式 */
+    .chat-mode {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 10px 15px;
+        background-color: rgba(255, 255, 255, 0.9);
+        border-bottom: 1px solid #eee;
+        
+        .ant-radio-group {
+            .ant-radio-button-wrapper {
+                padding: 0 20px;
+                height: 32px;
+                line-height: 30px;
+            }
+        }
+        
+        .mode-status {
+            font-size: 12px;
+            color: #666;
+            margin-left: 15px;
+            
+            &::before {
+                content: "●";
+                margin-right: 5px;
+                color: #52c41a; /* 绿色表示正常 */
+            }
+        }
+    }
+    
     .messages{
         flex: 1;
+        overflow-y: auto;
+        padding: 15px;
     }
 
     .input{
-        position:absolute;
-        bottom:0;
-        flex:0;
+        position: sticky; /* 改为sticky */
+        bottom: 0;
+        background-color: white;
+        padding: 15px;
+        border-top: 1px solid #eee;
+        flex: 0;
     }
 }

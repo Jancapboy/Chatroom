@@ -45,7 +45,23 @@
             }
         }
 
-        
+        &.ai {
+            .avatar {
+            background: #1976d2 !important; /* AI固定蓝色 */
+            }
+            
+            .messageBox {
+            .nickname {
+                color: #1976d2;
+                font-weight: bold;
+            }
+            }
+            
+            // AI消息气泡样式
+            &::before {
+            border-right-color: #e3f2fd;
+            }
+        }
     }
     
     .receive{
