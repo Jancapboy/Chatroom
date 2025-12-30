@@ -18,6 +18,16 @@
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
   }
+    // 在 login.scss 中添加
+    .remember-password {
+      margin: 10px 0;
+      display: flex;
+      justify-content: center;
+
+      .ant-checkbox-wrapper {
+        color: #121010
+      }
+    }
 
   .loginBar {
     position: absolute;
