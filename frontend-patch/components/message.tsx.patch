@@ -1,0 +1,93 @@
+import { useMemo } from "react";
+import { ExclamationCircleOutlined, SyncOutlined } from "@ant-design/icons";
+import { Popover } from "antd";
+import ModelViewer from "../model/modelViewer";
+import "./message.scss";
+
+interface IMessageParams {
+  content: string;
+  nickname: string;
+  nowTime: Date;
+  sentTime: number;
+  status: "receive" | "sending" | "sent" | "fail";
+}
+
+// 尝试解析3D消息
+function parse3DMessage(content: string): { type: string; prompt: string; model_url: string } | null {
+  try {
+    const parsed = JSON.parse(content);
+    if (parsed.type === "3d_model" && parsed.model_url) {
+      return parsed;
+    }
+  } catch {}
+  return null;
+}
+
+export default function Message(params: IMessageParams) {
+  const hsl = hashCode(params.nickname);
+  const bgcolor = `hsl(${hsl[0]},${hsl[1]}%,${hsl[2]}%)`;
+  const model3D = useMemo(() => parse3DMessage(params.content), [params.content]);
+
+  return (
+    <div className={`message ${params.status}`}>
+      <div className="avatar" style={{ background: bgcolor }}>
+        <div className="avatarChar">{avatarChar(params.nickname)}</div>
+      </div>
+      <div className="messageBox">
+        <div className="nickname">{params.nickname}</div>
+        {model3D ? (
+          <div className="model3DMessage">
+            <div className="modelPrompt">🎨 {model3D.prompt}</div>
+            <ModelViewer modelUrl={model3D.model_url} width={280} height={250} />
+          </div>
+        ) : (
+          <div className="text">{params.content}</div>
+        )}
+        <div className="time">
+          {timeString(new Date(params.sentTime), params.nowTime)}
+        </div>
+      </div>
+      {params.status === "fail" ? (
+        <Popover content="发送失败">
+          <ExclamationCircleOutlined />
+        </Popover>
+      ) : params.status === "sending" ? (
+        <Popover content="发送中">
+          <SyncOutlined spin />
+        </Popover>
+      ) : (
+        <></>
+      )}
+    </div>
+  );
+}
+
+const hashCode = (nickname: string): number[] => {
+  let h = 0, s = 0, l = 0;
+  for (let i = 0; i < nickname.length; i++) {
+    h = (h << 4) - h + nickname.charCodeAt(i); h |= 0;
+    s = (s << 3) - s + nickname.charCodeAt(i); s |= 0;
+    l = (l << 2) - l + nickname.charCodeAt(i); l |= 0;
+  }
+  h *= 100; s *= 10; l *= 10;
+  h %= 360; s %= 30; l %= 30;
+  return [h, s + 40, l + 40];
+};
+
+const avatarChar = (nickname: string): string => {
+  if (/^[A-Za-z0-9]+$/g) {
+    return nickname.substring(0, 2);
+  }
+  return nickname.substring(nickname.length - 2);
+};
+
+const timeString = (past: Date, now: Date): string => {
+  const minute: string = (past.getMinutes() < 10 ? "0" : "") + past.getMinutes();
+  if (past.getFullYear() !== now.getFullYear()) {
+    return `${past.getFullYear()}/${past.getMonth() + 1}/${past.getDate()} ${past.getHours()}:${minute}`;
+  } else if (past.getMonth() !== now.getMonth() || past.getDate() !== now.getDate()) {
+    return `${past.getMonth() + 1}/${past.getDate()} ${past.getHours()}:${minute}`;
+  } else {
+    return `${past.getHours()}:${minute}`;
+  }
+};
