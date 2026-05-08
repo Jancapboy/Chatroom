@@ -1,4 +1,3 @@
-import { motion } from 'framer-motion';
 import type { Phase } from '../../types/room';
 
 const phases: { key: Phase; label: string }[] = [
@@ -33,7 +32,7 @@ export function PhaseIndicator({ currentPhase, currentRound, maxRounds }: PhaseI
           const isCompleted = index < currentIndex;
 
           return (
-            <motion.div
+            <div
               key={phase.key}
               className={`flex-1 h-2 rounded-full ${
                 isActive
@@ -42,23 +41,13 @@ export function PhaseIndicator({ currentPhase, currentRound, maxRounds }: PhaseI
                     ? 'bg-accent-cyan/40'
                     : 'bg-bg-elevated'
               }`}
-              animate={
-                isActive
-                  ? { scale: [1, 1.05, 1] }
-                  : {}
-              }
-              transition={
-                isActive
-                  ? { duration: 2, repeat: Infinity }
-                  : {}
-              }
             >
               <div className="relative group">
                 <div className="absolute -top-7 left-1/2 -translate-x-1/2 opacity-0 group-hover:opacity-100 transition-opacity bg-bg-elevated text-text-secondary text-[10px] px-2 py-0.5 rounded whitespace-nowrap border border-border-subtle">
                   {phase.label}
                 </div>
               </div>
-            </motion.div>
+            </div>
           );
         })}
       </div>

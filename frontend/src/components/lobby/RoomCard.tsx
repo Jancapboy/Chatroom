@@ -1,4 +1,3 @@
-import { motion } from 'framer-motion';
 import { Users, MessageCircle, ArrowRight, Clock, CheckCircle, PauseCircle, PlayCircle } from 'lucide-react';
 import type { Room } from '../../types/room';
 
@@ -20,9 +19,8 @@ export function RoomCard({ room, onEnter }: RoomCardProps) {
   const StatusIcon = status.icon;
 
   return (
-    <motion.div
-      whileHover={{ y: -4, boxShadow: '0 8px 30px rgba(0, 212, 170, 0.08)' }}
-      className="bg-bg-secondary rounded-lg border border-border-subtle overflow-hidden hover:border-border-glow transition-all cursor-pointer"
+    <div
+      className="bg-bg-secondary rounded-lg border border-border-subtle overflow-hidden hover:border-border-glow hover:-translate-y-1 hover:shadow-[0_8px_30px_rgba(0,212,170,0.08)] transition-all duration-200 cursor-pointer"
       onClick={() => onEnter(room.id)}
     >
       {/* Header */}
@@ -85,14 +83,11 @@ export function RoomCard({ room, onEnter }: RoomCardProps) {
           </div>
         </div>
 
-        <motion.div
-          whileHover={{ x: 4 }}
-          className="flex items-center gap-1 text-sm text-accent-cyan font-medium"
-        >
+        <div className="flex items-center gap-1 text-sm text-accent-cyan font-medium hover:translate-x-1 transition-transform">
           进入
           <ArrowRight size={16} />
-        </motion.div>
+        </div>
       </div>
-    </motion.div>
+    </div>
   );
 }

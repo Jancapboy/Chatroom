@@ -1,5 +1,4 @@
 import { useState, useEffect } from 'react';
-import { motion } from 'framer-motion';
 import { ArrowLeft, Sparkles, Users, Clock, Check } from 'lucide-react';
 import { roomApi } from '../lib/api';
 import type { AgentRole } from '../types/room';
@@ -312,14 +311,13 @@ export function CreateRoom({ onNavigate }: CreateRoomProps) {
 
           {/* Submit */}
           <div className="pt-4">
-            <motion.button
-              whileTap={{ scale: 0.98 }}
+            <button
               type="submit"
               disabled={isSubmitting || !name.trim() || selectedAgents.length < 2}
-              className="w-full py-3 bg-accent-cyan text-bg-primary rounded-md font-semibold text-sm hover:bg-accent-cyan-dim transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+              className="w-full py-3 bg-accent-cyan text-bg-primary rounded-md font-semibold text-sm hover:bg-accent-cyan-dim transition-colors disabled:opacity-50 disabled:cursor-not-allowed active:scale-[0.98]"
             >
               {isSubmitting ? '创建中...' : '创建房间'}
-            </motion.button>
+            </button>
           </div>
         </form>
       </div>

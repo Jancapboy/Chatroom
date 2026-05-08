@@ -29,15 +29,22 @@ type Room struct {
 	Messages []Message   `json:"messages,omitempty" gorm:"foreignKey:RoomID"`
 }
 
-func (r Room) Create(db *gorm.DB) *errcode.Error {
-	err := db.Create(&r).Error
+func (r *Room) Create(db *gorm.DB) *errcode.Error {
+	now := time.Now()
+	if r.CreatedAt.IsZero() {
+		r.CreatedAt = now
+	}
+	if r.UpdatedAt.IsZero() {
+		r.UpdatedAt = now
+	}
+	err := db.Create(r).Error
 	if err != nil {
 		return errcode.Convert(err)
 	}
 	return nil
 }
 
-func (r Room) Get(db *gorm.DB) (*Room, *errcode.Error) {
+func (r *Room) Get(db *gorm.DB) (*Room, *errcode.Error) {
 	var room Room
 	err := db.Where("id = ?", r.ID).Preload("Agents").Preload("Messages", func(db *gorm.DB) *gorm.DB {
 		return db.Order("created_at DESC").Limit(100)
@@ -51,8 +58,9 @@ func (r Room) Get(db *gorm.DB) (*Room, *errcode.Error) {
 	return &room, nil
 }
 
-func (r Room) Update(db *gorm.DB) *errcode.Error {
-	err := db.Save(&r).Error
+func (r *Room) Update(db *gorm.DB) *errcode.Error {
+	r.UpdatedAt = time.Now()
+	err := db.Save(r).Error
 	if err != nil {
 		return errcode.Convert(err)
 	}

@@ -1,5 +1,4 @@
 import { useState } from 'react';
-import { motion } from 'framer-motion';
 import { LogIn, Eye, EyeOff, Flame } from 'lucide-react';
 import { useAuthStore } from '../stores/useAuthStore';
 
@@ -32,11 +31,7 @@ export function Login({ onNavigate }: LoginProps) {
 
   return (
     <div className="min-h-screen bg-bg-primary flex items-center justify-center px-4">
-      <motion.div
-        initial={{ opacity: 0, y: 20 }}
-        animate={{ opacity: 1, y: 0 }}
-        className="w-full max-w-md"
-      >
+      <div className="w-full max-w-md animate-fadeIn">
         {/* Logo */}
         <div className="text-center mb-8">
           <div className="w-16 h-16 mx-auto rounded-xl bg-accent-cyan/10 flex items-center justify-center mb-4">
@@ -82,24 +77,19 @@ export function Login({ onNavigate }: LoginProps) {
           </div>
 
           {error && (
-            <motion.div
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              className="text-sm text-accent-danger bg-accent-danger/10 px-3 py-2 rounded-md"
-            >
+            <div className="text-sm text-accent-danger bg-accent-danger/10 px-3 py-2 rounded-md">
               {error}
-            </motion.div>
+            </div>
           )}
 
-          <motion.button
-            whileTap={{ scale: 0.98 }}
+          <button
             type="submit"
             disabled={isLoading}
-            className="w-full py-3 bg-accent-cyan text-bg-primary rounded-md font-semibold text-sm hover:bg-accent-cyan-dim transition-colors disabled:opacity-50 flex items-center justify-center gap-2"
+            className="w-full py-3 bg-accent-cyan text-bg-primary rounded-md font-semibold text-sm hover:bg-accent-cyan-dim transition-colors disabled:opacity-50 flex items-center justify-center gap-2 active:scale-[0.98]"
           >
             <LogIn size={16} />
             {isLoading ? '登录中...' : '登录'}
-          </motion.button>
+          </button>
         </form>
 
         {/* Guest access */}
@@ -111,7 +101,7 @@ export function Login({ onNavigate }: LoginProps) {
             以游客身份浏览大厅 →
           </button>
         </div>
-      </motion.div>
+      </div>
     </div>
   );
 }

@@ -1,5 +1,4 @@
 import { useEffect, useState } from 'react';
-import { motion } from 'framer-motion';
 import { Plus, Search, Filter, Flame, Clock, CheckCircle, PlayCircle } from 'lucide-react';
 import { RoomCard } from '../components/lobby/RoomCard';
 import { useLobbyStore } from '../stores/useLobbyStore';
@@ -44,14 +43,13 @@ export function Lobby({ onNavigate }: LobbyProps) {
             </div>
           </div>
 
-          <motion.button
-            whileTap={{ scale: 0.95 }}
+          <button
             onClick={() => onNavigate('create')}
-            className="flex items-center gap-2 px-4 py-2 bg-accent-cyan text-bg-primary rounded-md text-sm font-semibold hover:bg-accent-cyan-dim transition-colors"
+            className="flex items-center gap-2 px-4 py-2 bg-accent-cyan text-bg-primary rounded-md text-sm font-semibold hover:bg-accent-cyan-dim transition-colors active:scale-95"
           >
             <Plus size={16} />
             创建房间
-          </motion.button>
+          </button>
         </div>
       </header>
 
@@ -91,17 +89,16 @@ export function Lobby({ onNavigate }: LobbyProps) {
         {filtered.length > 0 ? (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
             {filtered.map((room, index) => (
-              <motion.div
+              <div
                 key={room.id}
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: index * 0.05 }}
+                style={{ animationDelay: `${index * 50}ms` }}
+                className="animate-fadeIn"
               >
                 <RoomCard
                   room={room}
                   onEnter={(id) => onNavigate('room', { roomId: id })}
                 />
-              </motion.div>
+              </div>
             ))}
           </div>
         ) : (

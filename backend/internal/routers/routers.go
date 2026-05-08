@@ -39,6 +39,12 @@ func NewRouter() *gin.Engine {
 		apiV1.GET("/rooms/:id/messages", room.Messages)
 		apiV1.POST("/rooms/:id/agents", room.AddAgent)
 
+		// 回溯/分支（新增）
+		apiV1.GET("/rooms/:id/snapshots", room.Snapshots)
+		apiV1.POST("/rooms/:id/rollback", room.Rollback)
+		apiV1.POST("/rooms/:id/fork", room.Fork)
+		apiV1.POST("/rooms/:id/snapshots", room.CreateSnapshot)
+
 		// 智能体模板（新增）
 		apiV1.GET("/agents/templates", agent.Templates)
 	}

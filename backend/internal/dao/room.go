@@ -12,7 +12,7 @@ func (d *Dao) RoomCreate(room *model.Room) *errcode.Error {
 
 // RoomGet 获取房间详情
 func (d *Dao) RoomGet(id string) (*model.Room, *errcode.Error) {
-	return model.Room{ID: id}.Get(d.engine)
+	return (&model.Room{ID: id}).Get(d.engine)
 }
 
 // RoomUpdate 更新房间

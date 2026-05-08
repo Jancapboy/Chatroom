@@ -1,4 +1,3 @@
-import { motion } from 'framer-motion';
 import { Zap, Target, Shield, Brain, BarChart3, Hammer } from 'lucide-react';
 import type { Agent } from '../../types/room';
 
@@ -36,98 +35,79 @@ interface AgentPanelProps {
 
 export function AgentPanel({ agents }: AgentPanelProps) {
   return (
-    <div className="h-full flex flex-col bg-bg-secondary border-r border-border-subtle">
-      <div className="p-4 border-b border-border-subtle">
-        <h2 className="text-sm font-semibold text-text-secondary uppercase tracking-wider">
+    <div className="flex flex-col bg-bg-secondary rounded-lg border border-border-subtle overflow-hidden">
+      <div className="p-3 border-b border-border-subtle">
+        <h2 className="text-xs font-semibold text-text-secondary uppercase tracking-wider">
           智能体状态
         </h2>
-        <p className="text-xs text-text-muted mt-1">{agents.length} 个活跃Agent</p>
+        <p className="text-[11px] text-text-muted mt-0.5">{agents.length} 个活跃Agent</p>
       </div>
 
-      <div className="flex-1 overflow-y-auto p-3 space-y-3">
-        {agents.map((agent, index) => {
+      <div className="p-2 space-y-2 max-h-64 overflow-y-auto">
+        {agents.map((agent) => {
           const Icon = roleIcons[agent.role] || Zap;
           return (
-            <motion.div
+            <div
               key={agent.id}
-              initial={{ opacity: 0, x: -20 }}
-              animate={{ opacity: 1, x: 0 }}
-              transition={{ delay: index * 0.1 }}
-              className="bg-bg-elevated rounded-lg p-3 border border-border-subtle hover:border-border-glow transition-colors"
+              className="bg-bg-elevated rounded-lg p-2.5 border border-border-subtle hover:border-border-glow transition-colors"
             >
-              {/* Header */}
-              <div className="flex items-center gap-3">
+              <div className="flex items-center gap-2.5">
                 <div
-                  className="w-10 h-10 rounded-full flex items-center justify-center text-white text-sm font-bold shrink-0"
+                  className="w-8 h-8 rounded-full flex items-center justify-center text-white text-xs font-bold shrink-0"
                   style={{ backgroundColor: agent.color }}
                 >
                   {agent.name[0]}
                 </div>
-                <div className="min-w-0">
-                  <div className="font-medium text-text-primary text-sm truncate">
+                <div className="min-w-0 flex-1">
+                  <div className="font-medium text-text-primary text-xs truncate">
                     {agent.name}
                   </div>
-                  <div className="text-xs text-text-muted flex items-center gap-1">
-                    <Icon size={12} />
+                  <div className="text-[10px] text-text-muted flex items-center gap-1">
+                    <Icon size={10} />
                     {roleLabels[agent.role]}
                   </div>
                 </div>
+                {agent.isActive && (
+                  <span className="w-1.5 h-1.5 rounded-full bg-agent-analyst animate-pulse shrink-0" />
+                )}
               </div>
 
-              {/* Role color bar */}
-              <div
-                className="h-1 rounded-full mt-2"
-                style={{ backgroundColor: agent.color, opacity: 0.6 }}
-              />
-
               {/* Stats */}
-              <div className="mt-3 space-y-2">
-                {/* Energy */}
+              <div className="mt-2 space-y-1.5">
                 <div>
-                  <div className="flex justify-between text-xs mb-1">
+                  <div className="flex justify-between text-[10px] mb-0.5">
                     <span className="text-text-muted">能量</span>
                     <span className="text-text-secondary">{agent.energy}%</span>
                   </div>
-                  <div className="h-1.5 bg-bg-primary rounded-full overflow-hidden">
-                    <motion.div
-                      className="h-full rounded-full"
-                      style={{ backgroundColor: agent.color }}
-                      initial={{ width: 0 }}
-                      animate={{ width: `${agent.energy}%` }}
-                      transition={{ duration: 1, delay: index * 0.1 }}
+                  <div className="h-1 bg-bg-primary rounded-full overflow-hidden">
+                    <div
+                      className="h-full rounded-full transition-all duration-500"
+                      style={{ width: `${agent.energy}%`, backgroundColor: agent.color }}
                     />
                   </div>
                 </div>
-
-                {/* Confidence */}
                 <div>
-                  <div className="flex justify-between text-xs mb-1">
+                  <div className="flex justify-between text-[10px] mb-0.5">
                     <span className="text-text-muted">置信度</span>
                     <span className="text-text-secondary">{agent.confidence}%</span>
                   </div>
-                  <div className="h-1.5 bg-bg-primary rounded-full overflow-hidden">
-                    <motion.div
-                      className="h-full rounded-full bg-accent-cyan"
-                      initial={{ width: 0 }}
-                      animate={{ width: `${agent.confidence}%` }}
-                      transition={{ duration: 1, delay: index * 0.1 + 0.2 }}
+                  <div className="h-1 bg-bg-primary rounded-full overflow-hidden">
+                    <div
+                      className="h-full rounded-full bg-accent-cyan transition-all duration-500"
+                      style={{ width: `${agent.confidence}%` }}
                     />
                   </div>
                 </div>
               </div>
 
-              {/* Stance badge */}
-              <div className="mt-3 flex items-center justify-between">
+              <div className="mt-2">
                 <span
-                  className={`text-xs px-2 py-0.5 rounded-full text-white font-medium ${stanceColors[agent.stance]}`}
+                  className={`text-[10px] px-1.5 py-0.5 rounded-full text-white font-medium ${stanceColors[agent.stance]}`}
                 >
                   {stanceLabels[agent.stance]}
                 </span>
-                {agent.isActive && (
-                  <span className="w-2 h-2 rounded-full bg-agent-analyst animate-pulse" />
-                )}
               </div>
-            </motion.div>
+            </div>
           );
         })}
       </div>

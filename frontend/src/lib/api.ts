@@ -51,6 +51,14 @@ export const roomApi = {
   getMessages: (id: string, params?: { round?: number; phase?: string }) => 
     api.get<ApiResponse<unknown[]>>(`/rooms/${id}/messages`, { params }),
   getAgentTemplates: () => api.get<ApiResponse<unknown[]>>('/agents/templates'),
+  // 快照/回溯 API
+  getSnapshots: (id: string) => api.get<ApiResponse<unknown>>(`/rooms/${id}/snapshots`),
+  rollbackRoom: (id: string, snapshotId: string, reason?: string) => 
+    api.post<ApiResponse<unknown>>(`/rooms/${id}/rollback`, { snapshot_id: snapshotId, reason }),
+  forkFromSnapshot: (id: string, snapshotId: string, reason?: string) => 
+    api.post<ApiResponse<unknown>>(`/rooms/${id}/fork`, { snapshot_id: snapshotId, reason }),
+  createSnapshot: (id: string, reason?: string) => 
+    api.post<ApiResponse<unknown>>(`/rooms/${id}/snapshots`, { reason }),
 };
 
 export default api;

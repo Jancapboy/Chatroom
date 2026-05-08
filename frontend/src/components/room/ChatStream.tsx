@@ -1,4 +1,3 @@
-import { motion, AnimatePresence } from 'framer-motion';
 import { Bot, User, Info } from 'lucide-react';
 import type { Message, AgentRole } from '../../types/room';
 
@@ -46,24 +45,22 @@ export function ChatStream({ messages }: ChatStreamProps) {
     <div className="h-full flex flex-col bg-bg-primary">
       {/* Messages area */}
       <div className="flex-1 overflow-y-auto p-4 space-y-1">
-        <AnimatePresence>
-          {groups.map((group) => (
-            <div key={group.key} className="mb-4">
-              {/* Phase/Round divider */}
-              <div className="flex items-center gap-3 mb-3">
-                <div className="h-px flex-1 bg-border-subtle" />
-                <span className="text-xs text-text-muted font-medium">
-                  第 {group.round} 轮 · {phaseLabels[group.phase]}
-                </span>
-                <div className="h-px flex-1 bg-border-subtle" />
-              </div>
-
-              {group.items.map((msg) => (
-                <MessageBubble key={msg.id} message={msg} />
-              ))}
+        {groups.map((group) => (
+          <div key={group.key} className="mb-4">
+            {/* Phase/Round divider */}
+            <div className="flex items-center gap-3 mb-3">
+              <div className="h-px flex-1 bg-border-subtle" />
+              <span className="text-xs text-text-muted font-medium">
+                第 {group.round} 轮 · {phaseLabels[group.phase]}
+              </span>
+              <div className="h-px flex-1 bg-border-subtle" />
             </div>
-          ))}
-        </AnimatePresence>
+
+            {group.items.map((msg) => (
+              <MessageBubble key={msg.id} message={msg} />
+            ))}
+          </div>
+        ))}
       </div>
     </div>
   );
@@ -76,16 +73,12 @@ function MessageBubble({ message }: { message: Message }) {
 
   if (isSystem || message.type === 'phase_change' || message.type === 'consensus') {
     return (
-      <motion.div
-        initial={{ opacity: 0, y: 10 }}
-        animate={{ opacity: 1, y: 0 }}
-        className="flex justify-center my-2"
-      >
+      <div className="flex justify-center my-2 transition-opacity duration-200">
         <div className="flex items-center gap-2 px-4 py-2 bg-bg-elevated rounded-full border border-border-subtle">
           <Info size={14} className="text-text-muted" />
           <span className="text-xs text-text-muted">{message.content}</span>
         </div>
-      </motion.div>
+      </div>
     );
   }
 
@@ -96,11 +89,8 @@ function MessageBubble({ message }: { message: Message }) {
       : '#8888a0';
 
   return (
-    <motion.div
-      initial={{ opacity: 0, y: 12, scale: 0.98 }}
-      animate={{ opacity: 1, y: 0, scale: 1 }}
-      transition={{ duration: 0.3, ease: 'easeOut' }}
-      className={`flex gap-3 mb-3 ${isUser ? 'flex-row-reverse' : 'flex-row'}`}
+    <div
+      className={`flex gap-3 mb-3 transition-all duration-200 ${isUser ? 'flex-row-reverse' : 'flex-row'}`}
     >
       {/* Avatar */}
       <div
@@ -147,6 +137,6 @@ function MessageBubble({ message }: { message: Message }) {
           )}
         </div>
       </div>
-    </motion.div>
+    </div>
   );
 }

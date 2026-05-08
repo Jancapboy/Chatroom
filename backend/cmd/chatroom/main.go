@@ -31,6 +31,8 @@ func init() {
 		&model.RoomAgent{},
 		&model.Message{},
 		&model.AgentTemplate{},
+		&model.RoomSnapshot{},
+		&model.AgentMemory{},
 	)
 	if err != nil {
 		log.Fatalf("init.setupTableModel err: %v", err)

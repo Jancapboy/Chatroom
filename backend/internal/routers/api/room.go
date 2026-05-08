@@ -219,3 +219,129 @@ func (r Room) AddAgent(c *gin.Context) {
 
 	resp.ToResponse(agent)
 }
+
+// Snapshots 获取房间快照列表
+func (r Room) Snapshots(c *gin.Context) {
+	resp := response.NewResponse(c)
+	id := c.Param("id")
+	if id == "" {
+		resp.ToErrorResponse(errcode.InvalidParams)
+		return
+	}
+
+	svc := service.New(c.Request.Context())
+	snapshots, err := svc.SnapshotList(id)
+	if err != nil {
+		resp.ToErrorResponse(err)
+		return
+	}
+
+	resp.ToResponse(gin.H{
+		"list": snapshots,
+	})
+}
+
+// Rollback 回滚到指定快照
+func (r Room) Rollback(c *gin.Context) {
+	resp := response.NewResponse(c)
+	id := c.Param("id")
+	if id == "" {
+		resp.ToErrorResponse(errcode.InvalidParams)
+		return
+	}
+
+	var req struct {
+		SnapshotID string `json:"snapshot_id" binding:"required"`
+		Reason     string `json:"reason"`
+	}
+	if err := c.ShouldBindJSON(&req); err != nil {
+		resp.ToErrorResponse(errcode.InvalidParams)
+		return
+	}
+
+	userID, _ := c.Get("UserID")
+	uid, _ := userID.(uint64)
+
+	svc := service.New(c.Request.Context())
+	newRoom, err := svc.RoomRollback(id, req.SnapshotID, uid)
+	if err != nil {
+		resp.ToErrorResponse(err)
+		return
+	}
+
+	resp.ToResponse(newRoom)
+}
+
+// Fork 从快照创建分支（兼容旧接口：不传 snapshot_id 则回滚到最新快照）
+func (r Room) Fork(c *gin.Context) {
+	resp := response.NewResponse(c)
+	id := c.Param("id")
+	if id == "" {
+		resp.ToErrorResponse(errcode.InvalidParams)
+		return
+	}
+
+	var req struct {
+		SnapshotID string `json:"snapshot_id"`
+		Reason     string `json:"reason"`
+	}
+	if err := c.ShouldBindJSON(&req); err != nil {
+		resp.ToErrorResponse(errcode.InvalidParams)
+		return
+	}
+
+	userID, _ := c.Get("UserID")
+	uid, _ := userID.(uint64)
+
+	svc := service.New(c.Request.Context())
+
+	// 如果没有指定 snapshot_id，获取最新的快照
+	snapshotID := req.SnapshotID
+	if snapshotID == "" {
+		snapshots, err := svc.SnapshotList(id)
+		if err != nil {
+			resp.ToErrorResponse(err)
+			return
+		}
+		if len(snapshots) == 0 {
+			resp.ToErrorResponse(errcode.NewError(20030004, "没有可用的快照进行分支"))
+			return
+		}
+		snapshotID = snapshots[len(snapshots)-1].ID
+	}
+
+	newRoom, err := svc.RoomRollback(id, snapshotID, uid)
+	if err != nil {
+		resp.ToErrorResponse(err)
+		return
+	}
+
+	resp.ToResponse(newRoom)
+}
+
+// CreateSnapshot 手动创建快照
+func (r Room) CreateSnapshot(c *gin.Context) {
+	resp := response.NewResponse(c)
+	id := c.Param("id")
+	if id == "" {
+		resp.ToErrorResponse(errcode.InvalidParams)
+		return
+	}
+
+	var req struct {
+		Reason string `json:"reason"`
+	}
+	if err := c.ShouldBindJSON(&req); err != nil {
+		resp.ToErrorResponse(errcode.InvalidParams)
+		return
+	}
+
+	svc := service.New(c.Request.Context())
+	snapshot, err := svc.CreateManualSnapshot(id, req.Reason)
+	if err != nil {
+		resp.ToErrorResponse(err)
+		return
+	}
+
+	resp.ToResponse(snapshot)
+}
