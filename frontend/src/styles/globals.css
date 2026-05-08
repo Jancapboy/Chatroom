@@ -1,0 +1,106 @@
+@import "tailwindcss";
+
+@theme {
+  /* Backgrounds */
+  --color-bg-primary: #0a0a0f;
+  --color-bg-secondary: #12121a;
+  --color-bg-elevated: #1a1a25;
+  --color-bg-card: #16161f;
+
+  /* Borders */
+  --color-border-subtle: #2a2a35;
+  --color-border-glow: #3a3a50;
+
+  /* Text */
+  --color-text-primary: #e0e0e0;
+  --color-text-secondary: #8888a0;
+  --color-text-muted: #555570;
+
+  /* Accents */
+  --color-accent-cyan: #00d4aa;
+  --color-accent-cyan-dim: #00a884;
+  --color-accent-purple: #8b5cf6;
+  --color-accent-warn: #f59e0b;
+  --color-accent-danger: #ef4444;
+
+  /* Agent role colors */
+  --color-agent-architect: #3b82f6;
+  --color-agent-risk: #ef4444;
+  --color-agent-strategist: #8b5cf6;
+  --color-agent-analyst: #10b981;
+  --color-agent-executor: #f59e0b;
+
+  /* Semantic */
+  --color-support: #10b981;
+  --color-oppose: #ef4444;
+  --color-neutral: #f59e0b;
+}
+
+@layer base {
+  html {
+    background-color: var(--color-bg-primary);
+    color: var(--color-text-primary);
+  }
+
+  body {
+    font-family: 'Inter', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+
+  /* Custom scrollbar */
+  ::-webkit-scrollbar {
+    width: 6px;
+    height: 6px;
+  }
+  ::-webkit-scrollbar-track {
+    background: var(--color-bg-primary);
+  }
+  ::-webkit-scrollbar-thumb {
+    background: var(--color-border-subtle);
+    border-radius: 3px;
+  }
+  ::-webkit-scrollbar-thumb:hover {
+    background: var(--color-border-glow);
+  }
+}
+
+@layer utilities {
+  .text-glow {
+    text-shadow: 0 0 20px rgba(0, 212, 170, 0.3);
+  }
+  .border-glow {
+    box-shadow: 0 0 10px rgba(0, 212, 170, 0.15);
+  }
+  .pulse-ring {
+    animation: pulse-ring 2s cubic-bezier(0.215, 0.61, 0.355, 1) infinite;
+  }
+}
+
+@keyframes pulse-ring {
+  0% {
+    box-shadow: 0 0 0 0 rgba(0, 212, 170, 0.4);
+  }
+  70% {
+    box-shadow: 0 0 0 8px rgba(0, 212, 170, 0);
+  }
+  100% {
+    box-shadow: 0 0 0 0 rgba(0, 212, 170, 0);
+  }
+}
+
+@keyframes slideInBottom {
+  from {
+    opacity: 0;
+    transform: translateY(12px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
