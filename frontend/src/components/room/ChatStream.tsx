@@ -24,11 +24,14 @@ interface ChatStreamProps {
 }
 
 export function ChatStream({ messages }: ChatStreamProps) {
+  // Sort by timestamp ASC (oldest first) to ensure correct grouping
+  const sorted = [...messages].sort((a, b) => a.timestamp - b.timestamp);
+
   // Group messages by round+phase
   const groups: { key: string; round: number; phase: string; items: Message[] }[] = [];
   let currentGroup: { key: string; round: number; phase: string; items: Message[] } | null = null;
 
-  for (const msg of messages) {
+  for (const msg of sorted) {
     const key = `${msg.round}-${msg.phase}`;
     if (!currentGroup || currentGroup.key !== key) {
       if (currentGroup) groups.push(currentGroup);

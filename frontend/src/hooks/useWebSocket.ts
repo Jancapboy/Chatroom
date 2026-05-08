@@ -1,7 +1,7 @@
 import { useEffect, useRef, useCallback, useState } from 'react';
 import type { WSClientMessage, WSServerMessage } from '../types/ws';
 
-const WS_BASE_URL = import.meta.env.VITE_WS_URL || 'ws://localhost:8080';
+const WS_BASE_URL = import.meta.env.VITE_WS_URL || `${window.location.protocol === 'https:' ? 'wss:' : 'ws:'}//${window.location.hostname}:4001`;
 const RECONNECT_INTERVAL = 3000;
 const HEARTBEAT_INTERVAL = 30000;
 

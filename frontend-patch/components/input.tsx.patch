@@ -1,0 +1,48 @@
+import { useState } from "react";
+import { message } from "antd";
+import Generate3DButton from "../model/generate3D";
+import "./input.scss";
+
+interface IInputParams {
+  sendMessage: (content: string) => void;
+}
+
+export default function Input(params: IInputParams) {
+  const [text, setText] = useState<string>("");
+  const handleSendMsg = () => {
+    if (text === "") {
+      message.warning("发送消息不能为空", 1);
+    } else {
+      params.sendMessage(text);
+      setText("");
+    }
+  };
+
+  const handle3DGenerated = (modelUrl: string, prompt: string) => {
+    // 生成完成后发送一条3D消息到聊天室
+    params.sendMessage(JSON.stringify({
+      type: "3d_model",
+      prompt: prompt,
+      model_url: modelUrl,
+    }));
+  };
+
+  return (
+    <div className="input">
+      <Generate3DButton onGenerated={handle3DGenerated} />
+      <input
+        type="text"
+        value={text}
+        onChange={(e) => {
+          setText(e.target.value);
+        }}
+        onKeyDown={(e) => {
+          if (e.key === "Enter") {
+            handleSendMsg();
+          }
+        }}
+      />
+      <button onClick={handleSendMsg}>发 送</button>
+    </div>
+  );
+}

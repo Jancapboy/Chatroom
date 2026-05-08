@@ -63,7 +63,16 @@ func (u *User) ReceiveMessage(ctx context.Context) error {
 			return err
 		}
 
-		sendMessage := NewMessage(u, receiveMessage["message_content"])
+		msgType := receiveMessage["type"]
+		content := receiveMessage["message_content"]
+		modelUrl := receiveMessage["model_url"]
+
+		var sendMessage *Message
+		if msgType == MsgType3DModel && modelUrl != "" {
+			sendMessage = New3DMessage(u, content, modelUrl)
+		} else {
+			sendMessage = NewMessage(u, content)
+		}
 
 		Broadcaster.Broadcast(sendMessage)
 	}

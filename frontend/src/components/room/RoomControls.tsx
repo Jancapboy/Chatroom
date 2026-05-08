@@ -1,10 +1,11 @@
 import { motion } from 'framer-motion';
-import { Pause, Play, GitBranch, Forward, MessageSquare } from 'lucide-react';
+import { Pause, Play, GitBranch, Forward, MessageSquare, Rocket } from 'lucide-react';
 import { useState } from 'react';
 import type { RoomStatus } from '../../types/room';
 
 interface RoomControlsProps {
   status: RoomStatus;
+  onStart?: () => void;
   onPause?: () => void;
   onResume?: () => void;
   onFork?: () => void;
@@ -14,6 +15,7 @@ interface RoomControlsProps {
 
 export function RoomControls({
   status,
+  onStart,
   onPause,
   onResume,
   onFork,
@@ -21,6 +23,7 @@ export function RoomControls({
   onSendMessage,
 }: RoomControlsProps) {
   const [inputValue, setInputValue] = useState('');
+  const isPreparing = status === 'preparing';
   const isRunning = status === 'running';
   const isPaused = status === 'paused';
 
@@ -34,7 +37,18 @@ export function RoomControls({
   return (
     <div className="bg-bg-secondary border-t border-border-subtle p-4 space-y-3">
       {/* Control buttons */}
-      <div className="flex items-center gap-2">
+      <div className="flex items-center gap-2 flex-wrap">
+        {isPreparing && (
+          <motion.button
+            whileTap={{ scale: 0.95 }}
+            onClick={onStart}
+            className="flex items-center gap-2 px-4 py-2 bg-accent-cyan text-bg-primary rounded-md text-sm font-medium hover:bg-accent-cyan-dim transition-colors"
+          >
+            <Rocket size={16} />
+            开始推演
+          </motion.button>
+        )}
+
         {isRunning && (
           <motion.button
             whileTap={{ scale: 0.95 }}
@@ -57,14 +71,16 @@ export function RoomControls({
           </motion.button>
         )}
 
-        <motion.button
-          whileTap={{ scale: 0.95 }}
-          onClick={onNextPhase}
-          className="flex items-center gap-2 px-4 py-2 bg-bg-elevated text-text-secondary rounded-md text-sm font-medium hover:bg-bg-card transition-colors border border-border-subtle"
-        >
-          <Forward size={16} />
-          下一阶段
-        </motion.button>
+        {(isRunning || isPaused) && (
+          <motion.button
+            whileTap={{ scale: 0.95 }}
+            onClick={onNextPhase}
+            className="flex items-center gap-2 px-4 py-2 bg-bg-elevated text-text-secondary rounded-md text-sm font-medium hover:bg-bg-card transition-colors border border-border-subtle"
+          >
+            <Forward size={16} />
+            下一阶段
+          </motion.button>
+        )}
 
         <motion.button
           whileTap={{ scale: 0.95 }}

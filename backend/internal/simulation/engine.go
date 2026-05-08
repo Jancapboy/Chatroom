@@ -334,6 +334,9 @@ func (e *Engine) buildContextMessages(excludeAgentID string, limit int) string {
 }
 
 func (e *Engine) saveMessage(msg *model.Message) {
+	if msg.Metadata == "" {
+		msg.Metadata = "{}"
+	}
 	if err := e.dao.MessageCreate(msg); err != nil {
 		log.Printf("[Engine] 保存消息失败: %v", err)
 	}

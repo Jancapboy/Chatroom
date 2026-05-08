@@ -1,0 +1,43 @@
+.generate3DBtn {
+  background: linear-gradient(135deg, #667eea, #764ba2);
+  color: white;
+  border: none;
+  border-radius: 6px;
+  padding: 8px 12px;
+  cursor: pointer;
+  font-size: 14px;
+  margin-right: 8px;
+  transition: transform 0.2s;
+
+  &:hover {
+    transform: scale(1.05);
+  }
+}
+
+.generateBtn {
+  width: 100%;
+  margin-top: 12px;
+  padding: 10px;
+  background: #667eea;
+  color: white;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 15px;
+
+  &:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+  }
+}
+
+.progressBar {
+  margin-top: 12px;
+
+  .statusText {
+    text-align: center;
+    color: #888;
+    font-size: 12px;
+    margin-top: 4px;
+  }
+}

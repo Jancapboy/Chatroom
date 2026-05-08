@@ -138,6 +138,11 @@ func (svc *Service) RoomList(status string, page, pageSize int) ([]RoomResponse,
 	return resp, total, nil
 }
 
+// GetRoomAgents 获取房间内的Agent列表
+func (svc *Service) GetRoomAgents(roomID string) ([]model.RoomAgent, *errcode.Error) {
+	return svc.dao.AgentListByRoom(roomID)
+}
+
 // RoomStart 开始推演
 func (svc *Service) RoomStart(id string) *errcode.Error {
 	room, err := svc.dao.RoomGet(id)

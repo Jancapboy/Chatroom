@@ -3,9 +3,13 @@ package api
 import (
 	"strconv"
 
+	"github.com/Jancapboy/Chatroom/backend/global"
+	"github.com/Jancapboy/Chatroom/backend/internal/dao"
 	"github.com/Jancapboy/Chatroom/backend/internal/service"
+	"github.com/Jancapboy/Chatroom/backend/internal/simulation"
 	"github.com/Jancapboy/Chatroom/backend/pkg/errcode"
 	"github.com/Jancapboy/Chatroom/backend/pkg/response"
+	"github.com/Jancapboy/Chatroom/backend/pkg/ws_protocol"
 	"github.com/gin-gonic/gin"
 )
 
@@ -35,12 +39,7 @@ func (r Room) List(c *gin.Context) {
 		return
 	}
 
-	resp.ToResponse(gin.H{
-		"list":  rooms,
-		"total": total,
-		"page":  page,
-		"size":  pageSize,
-	})
+	resp.ToResponseList(rooms, total, page, pageSize)
 }
 
 // Create 创建房间
@@ -99,6 +98,24 @@ func (r Room) Start(c *gin.Context) {
 		resp.ToErrorResponse(err)
 		return
 	}
+
+	// 启动推演引擎
+	d := dao.New(global.DBEngine)
+	room, err := d.RoomGet(id)
+	if err != nil {
+		resp.ToErrorResponse(err)
+		return
+	}
+	agents, err := d.AgentListByRoom(id)
+	if err != nil {
+		resp.ToErrorResponse(err)
+		return
+	}
+
+	// 创建broadcast channel并启动引擎
+	broadcast := make(chan *ws_protocol.ServerMessage, 256)
+	engine := simulation.GlobalEngineManager.GetOrCreate(room, agents, broadcast)
+	go engine.Run()
 
 	resp.ToResponse(gin.H{"status": "running"})
 }

@@ -20,9 +20,15 @@ api.interceptors.request.use((config) => {
   return config;
 });
 
-// Response interceptor - handle errors
+// Response interceptor - handle errors & unwrap
 api.interceptors.response.use(
-  (response) => response,
+  (response) => {
+    // 后端统一返回 { code, msg, data }，自动解包 data
+    if (response.data && typeof response.data === 'object' && 'data' in response.data) {
+      return { ...response, data: response.data.data };
+    }
+    return response;
+  },
   (error) => {
     if (error.response?.status === 401) {
       localStorage.removeItem('asi_token');

@@ -10,14 +10,17 @@ import { Timeline } from '../components/room/Timeline';
 import { RoomControls } from '../components/room/RoomControls';
 import { useRoomStore } from '../stores/useRoomStore';
 import { useWebSocket } from '../hooks/useWebSocket';
+import { roomApi } from '../lib/api';
+import type { Message, Phase } from '../types/room';
+import type { AgentMessagePayload, AgentStatePayload, ConsensusUpdatePayload, PhaseChangePayload } from '../types/ws';
 
 interface RoomPageProps {
   onNavigate: (page: string) => void;
 }
 
 export function RoomPage({ onNavigate }: RoomPageProps) {
-  const roomId = window.location.pathname.split('/room/')[1] || 'room-1';
-  const { currentRoom, messages, agents, consensus, fetchRoom, addMessage, updateAgent, setConsensus, updatePhase } = useRoomStore();
+  const roomId = window.location.pathname.split('/room/')[1] || '';
+  const { currentRoom, messages, agents, consensus, fetchRoom, fetchMessages, addMessage, updateAgent, setConsensus, updatePhase } = useRoomStore();
   const { isConnected, lastMessage, sendUserMessage, sendCommand } = useWebSocket(roomId);
 
   const [leftPanelOpen, setLeftPanelOpen] = useState(true);
@@ -42,10 +45,13 @@ export function RoomPage({ onNavigate }: RoomPageProps) {
     return () => window.removeEventListener('resize', checkMobile);
   }, []);
 
-  // Fetch room on mount
+  // Fetch room + messages on mount
   useEffect(() => {
-    fetchRoom(roomId);
-  }, [roomId, fetchRoom]);
+    if (roomId) {
+      fetchRoom(roomId);
+      fetchMessages(roomId);
+    }
+  }, [roomId, fetchRoom, fetchMessages]);
 
   // Handle WS messages
   useEffect(() => {
@@ -53,39 +59,59 @@ export function RoomPage({ onNavigate }: RoomPageProps) {
 
     switch (lastMessage.type) {
       case 'message': {
-        const payload = lastMessage.payload as { message: typeof messages[0] };
-        addMessage(payload.message);
+        const p = lastMessage.payload as AgentMessagePayload;
+        const msg: Message = {
+          id: p.id,
+          roomId,
+          senderId: p.sender_id,
+          senderType: p.sender_type,
+          senderName: p.sender_name,
+          senderAvatar: p.sender_avatar,
+          content: p.content,
+          type: 'text',
+          phase: p.phase as Phase,
+          round: p.round,
+          timestamp: Date.now(),
+          metadata: {
+            confidence: p.confidence,
+            stance: p.stance,
+          },
+        };
+        addMessage(msg);
         break;
       }
       case 'agent_state': {
-        const payload = lastMessage.payload as { agentId: string; energy: number; confidence: number; stance: string };
-        const agent = agents.find((a) => a.id === payload.agentId);
+        const p = lastMessage.payload as AgentStatePayload;
+        const agent = agents.find((a) => a.id === p.agent_id);
         if (agent) {
           updateAgent({
             ...agent,
-            energy: payload.energy,
-            confidence: payload.confidence,
-            stance: payload.stance as 'support' | 'oppose' | 'neutral',
+            energy: p.energy,
+            confidence: p.confidence,
+            stance: p.stance as 'support' | 'oppose' | 'neutral',
           });
         }
         break;
       }
       case 'consensus_update': {
-        const payload = lastMessage.payload as { topic: string; agreement: number };
+        const p = lastMessage.payload as ConsensusUpdatePayload;
         setConsensus({
-          topic: payload.topic,
-          agreement: payload.agreement,
-          breakdown: consensus?.breakdown || {},
+          topic: p.topic,
+          agreement: Math.round(p.agreement),
+          breakdown: {}, // TODO: map breakdown from backend
         });
         break;
       }
       case 'phase_change': {
-        const payload = lastMessage.payload as { phase: 'info_gathering' | 'opinion_expression' | 'debate' | 'consensus' | 'decision' | 'summary'; round: number };
-        updatePhase(payload.phase, payload.round);
+        const p = lastMessage.payload as PhaseChangePayload;
+        updatePhase(p.phase, p.round);
+        break;
+      }
+      case 'system': {
         break;
       }
     }
-  }, [lastMessage, addMessage, updateAgent, setConsensus, updatePhase, agents, consensus]);
+  }, [lastMessage, addMessage, updateAgent, setConsensus, updatePhase, agents, currentRoom, roomId]);
 
   const handleSendMessage = useCallback((content: string) => {
     sendUserMessage(content);
@@ -103,6 +129,18 @@ export function RoomPage({ onNavigate }: RoomPageProps) {
       timestamp: Date.now(),
     });
   }, [sendUserMessage, addMessage, roomId, currentRoom]);
+
+  const handleStart = useCallback(async () => {
+    if (!roomId) return;
+    try {
+      await roomApi.startRoom(roomId);
+      // Refresh room state to get updated status
+      fetchRoom(roomId);
+    } catch (err) {
+      console.error('start room error:', err);
+      alert('启动推演失败: ' + String(err));
+    }
+  }, [roomId, fetchRoom]);
 
   const handlePause = useCallback(() => sendCommand('pause'), [sendCommand]);
   const handleResume = useCallback(() => sendCommand('resume'), [sendCommand]);
@@ -187,6 +225,7 @@ export function RoomPage({ onNavigate }: RoomPageProps) {
           <ChatStream messages={messages} />
           <RoomControls
             status={currentRoom.status}
+            onStart={handleStart}
             onPause={handlePause}
             onResume={handleResume}
             onFork={handleFork}

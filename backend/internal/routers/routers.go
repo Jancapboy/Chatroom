@@ -45,7 +45,9 @@ func NewRouter() *gin.Engine {
 
 	// WebSocket 路由（房间隔离）
 	wsGroup := r.Group("/ws")
-	wsGroup.Use(middleware.JWT())
+	if global.ServerSettings.RunMode != "debug" {
+		wsGroup.Use(middleware.JWT())
+	}
 	{
 		// 保留原有广播式WS（兼容）
 		wsGroup.GET("/", WebsocketHandler)
