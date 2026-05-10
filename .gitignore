@@ -1,1 +1,4 @@
 .env
+backend/configs/config.yaml
+node_modules/
+*.log
